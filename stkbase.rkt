@@ -1,22 +1,35 @@
-#lang racket
+#lang racket/base
 (require ffi/unsafe
          ffi/unsafe/define)
- 
+
+(provide Initcnn
+         OpenSTK
+         SetProp
+         CloseSTK
+         SetTimeOut
+         STKCmd
+         SyncSTK
+         CleanInfo
+         Shutdowncnn
+         Setmsgbuffer
+         (struct-out agtconreturninfo)
+         )
+         
 (define-ffi-definer defineag (ffi-lib "AgConnect"))
 
 ; AgConInit call (AgConInit-base)
-(defineag Initbase (_fun -> _int ) #:c-id AgConInit)
+;(defineag Initbase (_fun -> _int ) #:c-id AgConInit)
 ;AgConInit with config file call (AgConInit-config *config-file-path*)
-(defineag Initconfig (_fun _string -> _int ) #:c-id AgConInit)
+(defineag Initcnn (_fun [file : (_ptr i _string)= #f] -> _int ) #:c-id AgConInit)
 
-(defineag OpenSTKbase (_fun [id : (_ptr o _bytes)]  [unused : _pointer = #f]  _string -> (fg : _int )->(values id fg))#:c-id AgConOpenSTK)
+(defineag OpenSTK (_fun [id : (_ptr o _bytes)]  [unused : _pointer = #f]  _string -> (fg : _int )->(values id fg))#:c-id AgConOpenSTK)
 
 ;AgConCloseSTK
-(defineag closestk(_fun (_ptr i _bytes)-> _int )#:c-id AgConCloseSTK)
+(defineag CloseSTK(_fun (_ptr i _bytes)-> _int )#:c-id AgConCloseSTK)
 
 ;set time out
 
-(defineag settimeout(_fun _bytes _int -> _void) #:c-id AgConSetTimeout)
+(defineag SetTimeOut(_fun _bytes _int -> _void) #:c-id AgConSetTimeout)
 
 
 (define AgCRMHAHdrIdLen 6)
@@ -38,23 +51,23 @@
 (defineag STKCmd (_fun  _bytes _string [info : (_ptr o _agtconreturninfo)] -> (fg : _int)-> (values info fg)) #:c-id AgConProcessSTKCmd)
 
 ;sync
-(defineag sync (_fun _bytes [info : (_ptr o _agtconreturninfo)] -> (fg : _int) -> (values info fg)) #:c-id AgConGetAsync )
+(defineag SyncSTK (_fun _bytes [info : (_ptr o _agtconreturninfo)] -> (fg : _int) -> (values info fg)) #:c-id AgConGetAsync )
 ; 释放返回info
-(defineag cleanrt(_fun (_ptr i _agtconreturninfo) -> _void) #:c-id AgConCleanupReturnInfo)
+(defineag CleanInfo(_fun (_ptr i _agtconreturninfo) -> _void) #:c-id AgConCleanupReturnInfo)
 
 ;AgConSetProperties
 (define AgCConVerboseOn #x0001)
 (define AgCConAckOn #x0002)
 (define AgCConErrorOn #x0004)
 (define AgCConAsyncOn #x0008)
-(defineag setprop (_fun _bytes _uint -> _void)#:c-id AgConSetProperties)
+(defineag SetProp (_fun _bytes _uint -> _void)#:c-id AgConSetProperties)
 
 ;AgConShutdownConnect
 
-(defineag shutdown (_fun -> _void) #:c-id AgConShutdownConnect)
+(defineag Shutdowncnn (_fun -> _void) #:c-id AgConShutdownConnect)
 
 ;AgUtMsgReserveBuffer
-(defineag setmsgbuffer (_fun _int -> _void) #:c-id AgUtMsgReserveBuffer)
+(defineag Setmsgbuffer (_fun _int -> _void) #:c-id AgUtMsgReserveBuffer)
                        #|
 typedef struct AgTConReturnInfo
 {
