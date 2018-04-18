@@ -1,7 +1,4 @@
 #lang racket
-;
-(require "stkbase.rkt"
-         ffi/unsafe)
 
 ;(define(New-Demo id)
 ;  (STKCmd id "New / Scenario Demo"))
@@ -10,7 +7,9 @@
   (format "Realtime */Satellite/~a SetLookAhead HoldCBFPosition ~a ~a ~a" staname x y z))
 ;相机位置 实时
 (define(gen-RT obj op . parameters)
-  (format "Realtime ~a ~a  ~a" obj op (string-join parameters " ")))
+  (format "Realtime ~a ~a  ~a" obj op (string-join parameters)))
+
+;(gen-RT "*/Satellite/sta1" "SetLookAhead" "HoldCBFPosition 1550 60 28")
 
 (define(gen-Position obj type coordinate . parameters)
   (format "SetPosition ~a ~a ~a ~a"
@@ -22,12 +21,12 @@
   (format "VO obj atname tranname starttime Duration  StartValue-end"))
 
 
-(define(OpenSTK*)
-  (Initcnn)
-  (define-values (id fg)(OpenSTK "localhost:5001"))
-  (if(= fg 0)
-     id
-     (error 'openstk "failed")))
+;(define(OpenSTK*)
+;  (Initcnn)
+;  (define-values (id fg)(OpenSTK "localhost:5001"))
+ ; (if(= fg 0)
+ ;    id
+  ;   (error 'openstk "failed")))
 
 ;test
 ;(define id (OpenSTK*))
