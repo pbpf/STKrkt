@@ -22,7 +22,7 @@
 ;AgConInit with config file call (AgConInit-config *config-file-path*)
 (defineag Initcnn (_fun [file : (_ptr i _string)= #f] -> _int ) #:c-id AgConInit)
 
-(defineag OpenSTK (_fun [id : (_ptr o _bytes)]  [unused : _pointer = #f]  _string -> (fg : _int )->(values id fg))#:c-id AgConOpenSTK)
+(defineag OpenSTK (_fun [id : (_ptr o _bytes)]  [unused : _pointer = #f]   _string -> (fg : _int )->(values id fg))#:c-id AgConOpenSTK)
 
 ;AgConCloseSTK
 (defineag CloseSTK(_fun (_ptr i _bytes)-> _int )#:c-id AgConCloseSTK)
