@@ -2,12 +2,19 @@
 (require "stkbase.rkt"
          "stkcmd.rkt"
          "data-provider.rkt"
+         "matlab.rkt"
+         "callback.rkt"
          ;racket/class
          racket/gui/base
          racket/date
          )
-
-(define main (new frame% [label "Example"][width 500][x 600][y 300]))
+(define udp1 (udp-open-socket	"127.0.0.1" 8866));仅仅决定协议栈
+(define udp2 (udp-open-socket	"127.0.0.1" 7766));仅仅决定协议栈
+(udp-bind! udp1 	 "127.0.0.1" 8866);真正绑定
+(udp-bind! udp2 	 "127.0.0.1" 7766);真正绑定
+(udp-connect! udp1 	"127.0.0.1" 6519)
+(udp-connect! udp2 	"127.0.0.1" 4519)
+(define main (new myframe% [label "Example"][width 500][x 600][y 300][rudp udp2][wudp udp1][readcallback datacallback]))
 (define id-box (box #f))
 (define info-box (box #f))
 (define thread-box (box #f))
@@ -37,6 +44,7 @@
   (define id (unbox id-box))
   (when id
     (kill-thread  (unbox thread-box))
+    (send main stopall)
     (CloseSTK id)
     )
   (Shutdowncnn))
@@ -44,12 +52,12 @@
   (define id (unbox id-box))
   (write id)
   (when id
-    
+    (send main set-id! id)
     (STKCmd id (format "SetAnimation * StartAndCurrentTime ~s" (currnt-dstr)))
     (STKCmd id "Animate * Start RealTime")
-    (set-box! thread-box
-    (thread (lambda()
-              (data-provider id  1 1 2000000))))))
+    (send main startread)
+    (send main startsend)
+    ))
 
 (define(connectfunc p x)
   (Initcnn)
